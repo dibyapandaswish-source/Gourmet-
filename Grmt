@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gourmet &amp; Soups</title>
+<style>
+:root{
+  --plane:#f9f9f7; --surface-1:#fcfcfb;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
+  --seq-2:#9ec5f4; --seq-4:#3987e5; --seq-6:#184f95;
+  --ghost:rgba(11,11,11,0.045);
+}
+@media (prefers-color-scheme: dark){ :root:where(:not([data-theme="light"])){
+  --plane:#0d0d0d; --surface-1:#1a1a19;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --seq-2:#184f95; --seq-4:#3987e5; --seq-6:#9ec5f4;
+  --ghost:rgba(255,255,255,0.06);
+}}
+:root[data-theme="dark"]{
+  --plane:#0d0d0d; --surface-1:#1a1a19;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --seq-2:#184f95; --seq-4:#3987e5; --seq-6:#9ec5f4;
+  --ghost:rgba(255,255,255,0.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--text-primary);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 64px}
+header.top{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
+h1{font-size:21px;margin:0 0 2px;letter-spacing:-0.01em}
+.sub{color:var(--text-secondary);font-size:12.5px;margin:0}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:16px 0 0;
+  background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:10px 12px;
+  position:sticky;top:0;z-index:20}
+.bar .lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:2px}
+.bar .sep{width:1px;height:22px;background:var(--grid);margin:0 4px}
+button.ctl,select.ctl{font:inherit;font-size:13px;padding:6px 11px;border-radius:8px;cursor:pointer;
+  background:var(--plane);color:var(--text-primary);border:1px solid var(--border)}
+button.ctl[aria-pressed="true"]{background:var(--text-primary);color:var(--surface-1);border-color:var(--text-primary)}
+button.ctl:hover:not([aria-pressed="true"]):not(:disabled){background:var(--ghost)}
+button.ctl:disabled,select.ctl:disabled{opacity:.45;cursor:not-allowed}
+td.io{white-space:nowrap}
+.iotag{display:inline-block;font:500 11.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:var(--ghost);border:1px solid var(--border);border-radius:5px;padding:1px 6px;
+  cursor:pointer;color:var(--text-secondary);user-select:all}
+.iotag:hover{background:var(--plane);color:var(--text-primary)}
+.iotag.ok{color:var(--good);border-color:var(--good);user-select:none}
+.iomore{font-size:11px;color:var(--muted);margin-left:2px}
+section{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:16px}
+h2{font-size:15px;margin:0 0 3px;letter-spacing:-0.005em}
+.note{color:var(--text-secondary);font-size:12.5px;margin:0 0 15px;max-width:80ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(166px,1fr));gap:12px}
+.tile{border:1px solid var(--border);border-radius:11px;padding:13px 14px}
+.tile .lab{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.tile .val{font-size:25px;font-weight:600;letter-spacing:-0.02em;line-height:1.05}
+.tile .foot{font-size:12px;color:var(--text-secondary);margin-top:5px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+  padding:2px 8px;border-radius:999px;border:1px solid var(--border);white-space:nowrap}
+.chip svg{width:11px;height:11px;flex:none}
+.city-h{display:flex;align-items:center;gap:9px;margin:20px 0 10px;font-size:13px;font-weight:650;color:var(--text-secondary)}
+.city-h:first-child{margin-top:2px}
+.city-h .rule{flex:1;height:1px;background:var(--grid)}
+.legend{display:flex;gap:15px;flex-wrap:wrap;margin:0 0 12px;font-size:12.5px;color:var(--text-secondary)}
+.legend .k{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:3px;flex:none}
+.stack{display:flex;height:28px;border-radius:4px;gap:2px}
+.stackrow{margin-bottom:8px}
+.stacklab{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:5px}
+.bars{display:flex;flex-direction:column;gap:3px}
+.brow{display:grid;grid-template-columns:118px 1fr 156px;gap:10px;align-items:center;padding:2px 4px;border-radius:6px;cursor:pointer}
+.brow:hover{background:var(--ghost)}
+.brow.sel{background:var(--ghost);outline:1px solid var(--border)}
+.bname{font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btrack{height:15px}
+.bfill{height:15px;border-radius:0 4px 4px 0;background:var(--s1)}
+.bmeta{font-size:12px;color:var(--text-secondary);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.bmeta b{color:var(--text-primary);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+  font-weight:600;padding:7px 8px;border-bottom:1px solid var(--grid);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--grid);vertical-align:middle}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.itemrow{cursor:pointer}
+tr.itemrow:hover>td{background:var(--ghost)}
+tr.podrow td{font-size:12.5px;color:var(--text-secondary);background:var(--ghost)}
+tr.podrow td:first-child{padding-left:26px}
+.mini{display:inline-flex;gap:1.5px;align-items:flex-end;height:14px}
+.mini i{width:3px;background:var(--s1);border-radius:1px 1px 0 0;display:block}
+.mini i.z{background:var(--critical)}
+.pill{font-size:11px;padding:1.5px 7px;border-radius:999px;border:1px solid var(--border);color:var(--text-secondary);white-space:nowrap}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border-radius:8px;
+  border:1px solid var(--border);background:var(--plane);color:var(--text-primary);min-width:190px}
+.funnel{display:flex;flex-direction:column;gap:8px;max-width:620px}
+.fstep{display:grid;grid-template-columns:74px 1fr;gap:10px;align-items:center}
+.flab{font-size:12px;color:var(--text-secondary)}
+.ffill{height:25px;border-radius:0 4px 4px 0;display:flex;align-items:center;padding-left:9px;
+  font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.tip{position:fixed;pointer-events:none;z-index:60;background:var(--text-primary);color:var(--surface-1);
+  font-size:12px;padding:7px 9px;border-radius:7px;opacity:0;transition:opacity .09s;max-width:300px;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);font-variant-numeric:tabular-nums}
+.foothint{font-size:12px;color:var(--muted);margin-top:12px}
+.kv{display:flex;gap:5px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap}
+.drill{margin-top:14px;border-top:1px solid var(--grid);padding-top:14px}
+.drill h3{font-size:13px;margin:0 0 8px}
+.chartbox{width:100%}
+svg text{font-family:inherit}
+.catgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.catcard{border:1px solid var(--border);border-radius:11px;padding:12px 13px;cursor:pointer}
+.catcard:hover{background:var(--ghost)}
+.catcard .cn{font-size:13px;font-weight:600;margin-bottom:2px}
+.catcard .cf{font-size:20px;font-weight:600;letter-spacing:-0.02em}
+.catcard .cd{font-size:12px;color:var(--text-secondary);margin-top:3px}
+.meter{height:6px;border-radius:3px;background:var(--grid);margin-top:8px;overflow:hidden}
+.meter i{display:block;height:6px;border-radius:3px}
+@media(max-width:640px){ .brow{grid-template-columns:92px 1fr 126px} .tile .val{font-size:21px} }
+</style>
+</head>
+<body>
+<noscript><div style="background:#fee;color:#900;padding:14px;margin:14px;border:1px solid #900;border-radius:8px;font:14px sans-serif">
+  This file needs JavaScript to run, and your browser has it turned off (or blocked it for this file). Try opening it in Chrome or Edge — if you already are, drag this file into an already-open browser window rather than double-clicking it.
+</div></noscript>
+<div id="jsFatalError" style="display:none;background:#fee;color:#900;padding:14px;margin:14px;border:1px solid #900;border-radius:8px;font:13px/1.5 monospace;white-space:pre-wrap"></div>
+<script>
+window.addEventListener('error', function(e){
+  var el=document.getElementById('jsFatalError'); if(!el) return;
+  el.style.display='block';
+  el.textContent += 'Script error: ' + (e.message||'unknown') + (e.filename?(' — '+e.filename+':'+e.lineno+':'+e.colno):'') + '\n';
+});
+window.addEventListener('unhandledrejection', function(e){
+  var el=document.getElementById('jsFatalError'); if(!el) return;
+  el.style.display='block';
+  el.textContent += 'Promise error: ' + ((e.reason && (e.reason.message||e.reason)) || 'unknown') + '\n';
+});
+</script>
+<div class="wrap">
+<header class="top">
+  <div>
+    <h1>Gourmet &amp; Soups — supply &amp; sales</h1>
+    <p class="sub">Indented → Sent → Received, and what actually sold, for the gourmet and soup range · BLR · same date &amp; status rules as the IO Fill Rate log</p>
+    <p class="sub" id="jsReady" style="color:#b45309">Checking script… (if this line never changes, JavaScript isn't running for this file in this browser)</p>
+  </div>
+  <button class="ctl" id="themeBtn" aria-pressed="false">Dark</button>
+</header>
+
+<section id="uploadSection">
+  <h2>Upload today's file(s)</h2>
+  <p class="note">Drop in today's raw Internal Order CSV export(s), and your sales export alongside them — any number at once; I work out which is which from the columns. Only the tracked gourmet &amp; soup lines are kept, so this file stays small. Everything is parsed and computed right here in your browser; nothing is uploaded anywhere. When you're done, click <b>Download updated dashboard</b> and save it — that file is your new dashboard, with today folded in.</p>
+  <input type="file" id="fileInput" accept=".csv" multiple>
+  <div style="margin-top:10px">
+    <label style="font-size:13px;color:var(--text-secondary);cursor:pointer">
+      <input type="checkbox" id="overwriteChk"> Overwrite a date if it's already in this file (use to correct a mistake, or to backfill after changing the tracked list)
+    </label>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="ctl" id="processBtn" aria-pressed="false">Process files</button>
+    <button class="ctl" id="downloadBtn" aria-pressed="false" disabled>Download updated dashboard (.html)</button>
+  </div>
+  <div id="salesMap" style="display:none;margin-top:14px;padding:13px 14px;border:1px solid var(--border);border-radius:10px;background:var(--ghost)">
+    <div style="font-size:13.5px;font-weight:600;margin-bottom:4px">Sales file detected — check these columns</div>
+    <p class="note" style="margin:0 0 10px">I picked these from the file's headers. Change anything that looks wrong, then press <b>Process files</b>. The choice is remembered for next time.</p>
+    <div class="tools" style="gap:8px">
+      <label style="font-size:12.5px;color:var(--text-secondary)">Date <select class="ctl" id="scDate"></select></label>
+      <label style="font-size:12.5px;color:var(--text-secondary)">Store <select class="ctl" id="scPod"></select></label>
+      <label style="font-size:12.5px;color:var(--text-secondary)">Item <select class="ctl" id="scItem"></select></label>
+      <label style="font-size:12.5px;color:var(--text-secondary)">Qty sold <select class="ctl" id="scQty"></select></label>
+    </div>
+    <p class="foothint" id="scPreview" style="margin-top:8px"></p>
+  </div>
+  <pre id="uploadLog" style="display:none;background:var(--ghost);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;font-size:12.5px;white-space:pre-wrap;max-height:260px;overflow:auto"></pre>
+</section>
+
+<div class="bar">
+  <span class="lab">Date</span>
+  <select class="ctl" id="dateSel"></select>
+  <button class="ctl" id="removeDateBtn" title="Remove the selected date from this dashboard" disabled>Delete this date</button>
+  <span class="sep"></span>
+  <span class="lab">Range</span>
+  <select class="ctl" id="grpSel"></select>
+  <span class="sep"></span>
+  <span class="lab">Store</span>
+  <select class="ctl" id="storeSel" title="Narrow the whole dashboard to one store"></select>
+</div>
+
+<section>
+  <h2 id="glanceH">At a glance</h2>
+  <p class="note" id="glanceNote">Fill rate is Sent ÷ Indented. <b>Short units</b> is the gross shortfall felt at store level — every store's own shortfall added up, so an over-send to one store never hides a starved one elsewhere.</p>
+  <div id="tiles"></div>
+</section>
+
+<section id="secGroups">
+  <h2>Gourmet vs Soups, this date</h2>
+  <p class="note">Click a card to narrow the dashboard to that range.</p>
+  <div id="grpcards"></div>
+</section>
+
+<section>
+  <h2>Day-wise trend</h2>
+  <p class="note" id="trendNote">Fill rate and gross short units by date for the selected range. Hover for the exact day.</p>
+  <div class="legend" id="trendLegend"></div>
+  <div class="chartbox" id="chartFill"></div>
+  <div class="chartbox" id="chartShort" style="margin-top:6px"></div>
+</section>
+
+<section>
+  <h2 id="itemsH">Every item</h2>
+  <p class="note" id="itemsNote">Every tracked item indented this date, biggest shortfall first. Click a row for the store-level split of what was actually sent. Click any IO number to copy it for a Shoptree search.</p>
+  <div class="tools">
+    <input type="search" id="q" placeholder="Search item, store, or IO number…" aria-label="Search item, store, or IO number">
+    <button class="ctl" id="fltAll" aria-pressed="true">All items</button>
+    <button class="ctl" id="fltShort" aria-pressed="false">Short-supplied only</button>
+    <button class="ctl" id="fltZero" aria-pressed="false">Has zero-supplied stores</button>
+  </div>
+  <div style="overflow-x:auto"><table id="itemtbl"><thead><tr id="itemHead"></tr></thead><tbody></tbody></table></div>
+  <p class="foothint" id="itemcount"></p>
+</section>
+
+<section id="secStores">
+  <h2>Store by store</h2>
+  <p class="note">Every store carrying the selected range, ranked by gross short units. Click a store to see its own item lines.</p>
+  <div class="tools">
+    <button class="ctl" id="podSortShort" aria-pressed="true">Sort by short units</button>
+    <button class="ctl" id="podSortFill" aria-pressed="false">Sort by fill %</button>
+  </div>
+  <div id="podbars"></div>
+  <div id="poddrill"></div>
+</section>
+
+<section id="secLive">
+  <h2 id="liveH">Live check — is what you indent actually selling?</h2>
+  <p class="note" id="liveNote">Every store line that was indented, checked against what that store actually sold the same day. A line that was <b>sent but sold nothing</b> is the one to act on — the RM went out but the SKU isn't moving, or isn't live on that store's menu at all.</p>
+  <div id="liveSummary"></div>
+  <div class="tools" style="margin-top:12px">
+    <button class="ctl" id="lvFlag" aria-pressed="true">Indented but not selling</button>
+    <button class="ctl" id="lvAll" aria-pressed="false">All lines</button>
+    <button class="ctl" id="lvGrid" aria-pressed="false">Coverage grid</button>
+  </div>
+  <div id="liveBody"></div>
+</section>
+
+<section id="secAlias" style="display:none">
+  <h2>Sales names that didn't match</h2>
+  <p class="note">These item names came from the sales file but don't line up with anything in the tracked list, so their sales are being ignored. Map each one to the item it belongs to — otherwise that item will look like it sold nothing, which would show up as a false "not selling" flag. Mappings are remembered in this file.</p>
+  <div id="aliasBody"></div>
+</section>
+
+<section id="secRegistry">
+  <h2>Items tracked</h2>
+  <p class="note">This dashboard only keeps the items listed here — that's what lets the file stay small. When a new gourmet item or soup goes live, add it below, then re-upload that day's file with <b>Overwrite</b> ticked to backfill it. Items added here apply to every upload from now on.</p>
+  <div id="registry"></div>
+  <div class="tools" style="margin-top:14px">
+    <select class="ctl" id="regGroup"></select>
+    <input type="search" id="regNew" list="regCatalog" placeholder="Item name, exactly as it reads in Shoptree…" aria-label="Item to add" style="min-width:320px">
+    <datalist id="regCatalog"></datalist>
+    <button class="ctl" id="regAddBtn">Add item</button>
+  </div>
+  <p class="foothint" id="regHint"></p>
+</section>
+</div>
+<div class="tip" id="tip"></div>
+
+<script id="dataTag" type="application/json">{"dates":[],"detail":{},"registry":{"Gourmet":["Caprese Panini (Gourmet CK)","Chipotle Chicken Panini (Gourmet CK)","Chipotle Cottage Cheese Panini (Gourmet CK)","Pesto Chicken Panini (Gourmet CK)","English Breakfast (Gourmet CK)","Greek Platter Salad - Gourmet CK","Grilled Chicken Platter - Gourmet CK","Cottage Cheese with Roasted Vegetable - CK","Grilled Herbed Chicken with Roasted Vegetable - CK"],"Soups":["Truffle Cream Of Mushroom (V)","Cream Of Spinach (V)"],"Supporting":["Ciabatta Panini","Gourmet Sleeve"]},"catalog":[],"salesCols":{},"salesAlias":{},"salesUnmatched":[]}</script>
+<script>
+/* =====================================================================
+   Gourmet & Soups — supply & sales
+   Everything runs in this browser tab. No server, nothing uploaded.
+   ===================================================================== */
+(function(){ var el=document.getElementById('jsReady'); if(el){ el.textContent='Script loaded, building the page…'; } })();
+
+const DATA = JSON.parse(document.getElementById('dataTag').textContent);
+const GROUPS = ['Gourmet','Soups','Supporting'];
+const GRP_COLOR = {Gourmet:'var(--s1)', Soups:'var(--s2)', Supporting:'var(--s3)'};
+
+let date  = DATA.dates[DATA.dates.length-1];
+// Range never blends Gourmet/Soups (portions) with Supporting (pcs) — a fill
+// rate across different units of measure is a meaningless number.
+let grp   = 'CORE';         // CORE (gourmet+soups) | Gourmet | Soups | Supporting
+let store = 'ALL';
+let podSort='short', itemFilter='all', query='', selPod=null;
+let openItems = new Set();
+
+const fmt = n => (Math.round(n*100)/100).toLocaleString('en-IN');
+const pct = v => (v==null||isNaN(v)) ? '—' : (v*100).toFixed(1)+'%';
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rd2 = x => Math.round(x*100)/100;
+const det = () => DATA.detail[date] || null;
+const hasDetail = () => !!DATA.detail[date];
+const oneStore = () => store !== 'ALL';
+/** has any sales figure been loaded for this date yet? */
+const hasSales = () => { const d=det(); return !!(d && d.items.some(i=>i.sold!=null)); };
+
+const ICON = {
+  good:'<svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.2 11.4 3 8.2l1.1-1.1 2.1 2.1 5-5L12.3 5.3z"/></svg>',
+  warning:'<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.6 15 14H1zM7.2 6h1.6v4H7.2zm0 5h1.6v1.6H7.2z"/></svg>',
+  critical:'<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="7"/><path d="M7.2 4h1.6v5H7.2zm0 6h1.6v1.6H7.2z" fill="var(--surface-1)"/></svg>'};
+const flagOf = f => f>=0.95?{k:'good',t:'OK'}:f>=0.85?{k:'warning',t:'Watch'}:{k:'critical',t:'Check'};
+const chip = f => {const x=flagOf(f); return `<span class="chip" style="color:var(--${x.k})">${ICON[x.k]}${x.t}</span>`;};
+
+/* ---------- which groups the current Range filter covers ---------- */
+function activeGroups(){
+  if(grp==='CORE') return ['Gourmet','Soups'];
+  return [grp];
+}
+const grpLabel = () => grp==='CORE' ? 'Gourmet + Soups' : grp;
+
+/** units of `i` sold at `pod`: 0 when sales are loaded but this store sold none,
+    null only when there is genuinely no sales data for the date */
+function soldAt(i,pod){
+  const d=det();
+  if(!d || !d.salesLoaded || i.sold==null) return null;
+  return (i.soldBy && i.soldBy[pod]!=null) ? i.soldBy[pod] : 0;
+}
+
+/* ---------- item rows for the current date / range / store ---------- */
+function itemsFor(){
+  const d=det(); if(!d) return [];
+  const ag=activeGroups();
+  let rows=d.items.filter(i=>ag.indexOf(i.g)>=0);
+  if(!oneStore()) return rows;
+  const pi=d.pods.indexOf(store); if(pi<0) return [];
+  const out=[];
+  rows.forEach(i=>{
+    const p=(i.pr||[]).find(x=>x[0]===pi); if(!p) return;
+    const o=p[1], s=p[2], r=p[3];
+    if(o<=0) return;
+    const f=o?Math.round(s/o*10000)/10000:0;
+    const rec={...i, o:rd2(o), s:rd2(s), r:rd2(r), sh:rd2(Math.max(o-s,0)), f,
+               np:1, z:(s===0?1:0), pr:[p]};
+    rec.sold = soldAt(i, store);
+    out.push(rec);
+  });
+  out.sort((a,b)=>b.sh-a.sh);
+  return out;
+}
+
+/* ---------- totals for the current scope ---------- */
+function scopeTotals(){
+  const rows=itemsFor();
+  const a={ord:0,sent:0,recd:0,short:0,items:rows.length,sold:0,anySold:false,zeroLines:0,shortItems:0};
+  rows.forEach(i=>{
+    a.ord+=i.o; a.sent+=i.s; a.recd+=i.r; a.short+=i.sh;
+    a.zeroLines+=i.z; if(i.f<0.995) a.shortItems++;
+    if(i.sold!=null){ a.sold+=i.sold; a.anySold=true; }
+  });
+  a.pods = oneStore() ? 1 : new Set([].concat(...rows.map(i=>(i.pr||[]).map(p=>p[0])))).size;
+  return a;
+}
+
+/* ---------- per-store rollup ---------- */
+function podRows(){
+  const d=det(); if(!d) return [];
+  const m={};
+  itemsFor().forEach(i=>(i.pr||[]).forEach(p=>{
+    const pod=d.pods[p[0]];
+    const x=m[pod]||(m[pod]={pod, ord:0,sent:0,recd:0,short:0,items:0,zero:0,sold:0,anySold:false});
+    const o=p[1], s=p[2];
+    if(o<=0) return;
+    x.ord+=o; x.sent+=s; x.recd+=p[3]; x.short+=Math.max(o-s,0); x.items++;
+    if(s===0) x.zero++;
+    const sv=soldAt(i,pod); if(sv!=null){ x.sold+=sv; x.anySold=true; }
+  }));
+  return Object.values(m).filter(x=>x.ord>0).map(x=>({...x, fill:x.sent/x.ord}));
+}
+
+/* ---------- day-wise trend for the current scope ---------- */
+function trendRows(){
+  const ag=activeGroups();
+  return DATA.dates.map(D=>{
+    const dd=DATA.detail[D];
+    if(!dd) return {date:D,ord:0,sent:0,short:0,has:false};
+    let pi=-1;
+    if(oneStore()){ pi=dd.pods.indexOf(store); if(pi<0) return {date:D,ord:0,sent:0,short:0,has:false}; }
+    const a={date:D,ord:0,sent:0,short:0,has:true};
+    dd.items.forEach(i=>{
+      if(ag.indexOf(i.g)<0) return;
+      if(pi<0){ a.ord+=i.o; a.sent+=i.s; a.short+=i.sh; }
+      else {
+        const p=(i.pr||[]).find(x=>x[0]===pi); if(!p||p[1]<=0) return;
+        a.ord+=p[1]; a.sent+=p[2]; a.short+=Math.max(p[1]-p[2],0);
+      }
+    });
+    return a;
+  });
+}
+
+/* ---------- IO numbers (click to copy for a Shoptree search) ---------- */
+function ioSplit(s){ return String(s||'').split(',').map(x=>x.trim()).filter(Boolean); }
+function ioList(i){ const set=new Set(); (i.pr||[]).forEach(p=>ioSplit(p[4]).forEach(x=>set.add(x))); return [...set].sort(); }
+const ioTag = io => `<span class="iotag" data-io="${esc(io)}" title="Click to copy">${esc(io)}</span>`;
+const dashCell = '<span style="color:var(--muted)">—</span>';
+function ioTags(s){ const l=ioSplit(s); return l.length ? l.map(ioTag).join(' ') : dashCell; }
+function ioCell(i){
+  const l=ioList(i); if(!l.length) return dashCell;
+  if(l.length<=2) return l.map(ioTag).join(' ');
+  return ioTag(l[0])+`<span class="iomore">+${l.length-1} more</span>`;
+}
+function copyFallback(txt,done){
+  try{ const ta=document.createElement('textarea'); ta.value=txt;
+    ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done();
+  }catch(e){}
+}
+function copyIO(txt,el){
+  const done=()=>{ const old=el.textContent; el.classList.add('ok'); el.textContent='copied ✓';
+    setTimeout(()=>{ el.textContent=old; el.classList.remove('ok'); },900); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done,()=>copyFallback(txt,done)); return; } }catch(e){}
+  copyFallback(txt,done);
+}
+function wireIOTags(root){
+  root.querySelectorAll('.iotag').forEach(el=>{
+    el.onclick=ev=>{ ev.stopPropagation(); copyIO(el.dataset.io,el); };
+  });
+}
+
+/* ---------- controls ---------- */
+function initControls(){
+  const ds=document.getElementById('dateSel');
+  ds.innerHTML = DATA.dates.length
+    ? DATA.dates.slice().reverse().map(d=>`<option value="${d}"${d===date?' selected':''}>${d}</option>`).join('')
+    : `<option value="">No data yet</option>`;
+  ds.onchange = e=>{ date=e.target.value; selPod=null; openItems.clear();
+    refreshStoreOptions(); renderAll(); };
+  const rd=document.getElementById('removeDateBtn');
+  if(rd) rd.disabled = DATA.dates.length===0;
+
+  const gs=document.getElementById('grpSel');
+  gs.innerHTML = `<option value="CORE"${grp==='CORE'?' selected':''}>Gourmet + Soups</option>`
+    + GROUPS.map(g=>`<option value="${esc(g)}"${g===grp?' selected':''}>${esc(g)}</option>`).join('');
+  gs.onchange = e=>{ grp=e.target.value; selPod=null; openItems.clear();
+    refreshStoreOptions(); renderAll(); };
+
+  refreshStoreOptions();
+  document.getElementById('storeSel').onchange = e=>{
+    store=e.target.value; selPod=null; openItems.clear(); renderAll(); };
+}
+function refreshStoreOptions(){
+  const ss=document.getElementById('storeSel'); if(!ss) return;
+  const d=det();
+  if(!d){ store='ALL'; ss.innerHTML='<option value="ALL">All stores</option>'; ss.disabled=true; return; }
+  const ag=activeGroups(), seen=new Set();
+  d.items.forEach(i=>{ if(ag.indexOf(i.g)<0) return;
+    (i.pr||[]).forEach(p=>{ if(p[1]>0) seen.add(d.pods[p[0]]); }); });
+  const avail=[...seen].sort();
+  if(oneStore() && avail.indexOf(store)<0) store='ALL';
+  ss.innerHTML=`<option value="ALL"${store==='ALL'?' selected':''}>All stores (${avail.length})</option>`
+    + avail.map(p=>`<option value="${esc(p)}"${p===store?' selected':''}>${esc(p)}</option>`).join('');
+  ss.disabled=false;
+}
+function setGroup(g){
+  grp = (grp===g) ? 'CORE' : g;
+  document.getElementById('grpSel').value=grp;
+  selPod=null; openItems.clear(); refreshStoreOptions(); renderAll();
+}
+
+/* ---------- tiles ---------- */
+function renderTiles(){
+  const scope = (oneStore()?' · '+store:'') + ' · ' + grpLabel();
+  document.getElementById('glanceH').textContent = date
+    ? `At a glance — ${date}${scope}`
+    : 'At a glance — no data yet, upload a file above';
+  const host=document.getElementById('tiles'); host.innerHTML='';
+  if(!hasDetail()){ host.innerHTML='<p class="note">Upload an Internal Order export above to populate this date.</p>'; return; }
+  const a=scopeTotals();
+  if(!a.items){ host.innerHTML=`<p class="note">Nothing tracked was indented in this scope on ${esc(date)}.</p>`; return; }
+  const fill=a.ord?a.sent/a.ord:NaN;
+  const tiles=[
+    ['Fill rate',pct(fill),`${fmt(a.ord)} indented → ${fmt(a.sent)} sent`,fill],
+    ['Short units',fmt(a.short),`${a.shortItems} items short · ${a.zeroLines} store-lines at zero`,null],
+    ['Items indented',fmt(a.items),oneStore()?'this store only':`across ${a.pods} store${a.pods===1?'':'s'}`,null],
+  ];
+  if(a.anySold){
+    const st=a.sent?a.sold/a.sent:NaN;
+    tiles.push(['Sold',fmt(a.sold),`${pct(st)} of what was sent`,null]);
+  } else {
+    tiles.push(['Sent → Received gap',fmt(a.sent-a.recd),
+      `${pct(a.sent?(a.sent-a.recd)/a.sent:NaN)} of what was dispatched`,null]);
+  }
+  const g=document.createElement('div'); g.className='tiles';
+  g.innerHTML=tiles.map(([l,v,f,fl])=>`<div class="tile"><div class="lab">${l}</div><div class="val">${v}</div>
+     <div class="foot">${fl!=null&&!isNaN(fl)?chip(fl)+' ':''}${f}</div></div>`).join('');
+  host.appendChild(g);
+}
+
+/* ---------- group cards ---------- */
+function renderGroupCards(){
+  const host=document.getElementById('grpcards');
+  const d=det();
+  if(!d){ host.innerHTML=''; return; }
+  const pi = oneStore() ? d.pods.indexOf(store) : -1;
+  const m={};
+  d.items.forEach(i=>{
+    let o,s,sh;
+    if(pi<0){ o=i.o; s=i.s; sh=i.sh; }
+    else { const p=(i.pr||[]).find(x=>x[0]===pi); if(!p||p[1]<=0) return;
+           o=p[1]; s=p[2]; sh=Math.max(o-s,0); }
+    const x=m[i.g]||(m[i.g]={ord:0,sent:0,short:0,items:0});
+    x.ord+=o; x.sent+=s; x.short+=sh; x.items++;
+  });
+  const order=GROUPS.filter(g=>m[g]);
+  host.innerHTML=`<div class="catgrid">${order.map(g=>{
+    const x=m[g], f=x.ord?x.sent/x.ord:NaN, fl=flagOf(f);
+    const on = (grp===g) || (grp==='CORE'&&g!=='Supporting');
+    return `<div class="catcard" data-g="${esc(g)}"${grp===g?' style="outline:1px solid var(--border);background:var(--ghost)"':''}>
+      <div class="cn">${esc(g)}${on?'':' <span style="color:var(--muted);font-weight:400">(filtered out)</span>'}</div>
+      <div class="cf">${pct(f)} <span style="font-size:12px;font-weight:500;color:var(--${fl.k})">${fl.t}</span></div>
+      <div class="cd">${fmt(x.ord)} indented · <b style="color:var(--text-primary)">${fmt(x.short)}</b> short · ${x.items} items</div>
+      <div class="meter"><i style="width:${Math.min(f*100,100)}%;background:var(--${fl.k})"></i></div>
+    </div>`;}).join('')}</div>`;
+  host.querySelectorAll('.catcard').forEach(el=>{ el.onclick=()=>setGroup(el.dataset.g); });
+}
+
+/* ---------- trend ---------- */
+function renderTrend(){
+  const rows=trendRows();
+  const col = grp==='CORE' ? 'var(--s1)' : GRP_COLOR[grp];
+  const name = (oneStore()? store+' · ' : '') + grpLabel();
+  const withData=rows.filter(r=>r.has).length;
+  document.getElementById('trendLegend').innerHTML =
+    `<span class="k"><span class="sw" style="background:${col}"></span>${esc(name)}</span>`
+    + `<span style="color:var(--muted)">${withData} of ${rows.length} date${rows.length===1?'':'s'}</span>`;
+  lineChart(document.getElementById('chartFill'),
+    [{name,color:col,pts:rows.map(r=>r.has&&r.ord?r.sent/r.ord:null)}],
+    v=>(v*100).toFixed(0)+'%','Fill rate by date');
+  barChart(document.getElementById('chartShort'),
+    [{name,color:col,pts:rows.map(r=>r.has?r.short:0)}],'Gross short units by date');
+}
+
+/* ---------- item table ---------- */
+function itemRows(){
+  let rows=itemsFor();
+  if(itemFilter==='short') rows=rows.filter(i=>i.sh>0||i.f<0.995);
+  if(itemFilter==='zero')  rows=rows.filter(i=>i.z>0);
+  if(query){ const q=query.toLowerCase(); const d=det();
+    rows=rows.filter(i=> i.i.toLowerCase().includes(q) || i.g.toLowerCase().includes(q)
+      || (i.pr||[]).some(p=>d.pods[p[0]].toLowerCase().includes(q) || (p[4]||'').toLowerCase().includes(q)));
+  }
+  return rows.slice().sort((a,b)=>b.sh-a.sh || b.o-a.o);
+}
+function mini(i){
+  if(!i.pr) return '';
+  const rows=i.pr.slice().sort((a,b)=>(a[1]?a[2]/a[1]:9)-(b[1]?b[2]/b[1]:9)).slice(0,34);
+  return `<span class="mini">${rows.map(p=>{
+    const f=Math.min(p[1]?p[2]/p[1]:0,1.5), h=Math.max(Math.round(f/1.5*14),2);
+    return `<i class="${p[2]===0?'z':''}" style="height:${h}px"></i>`;}).join('')}</span>`;
+}
+function renderItems(){
+  const sales=hasSales();
+  const cols=['Item','Range','IO number','Indented','Sent','Received','Short','Fill %']
+    .concat(sales?['Sold','Sold ÷ sent']:[])
+    .concat(['Stores','Zero','Spread']);
+  document.getElementById('itemHead').innerHTML =
+    cols.map((c,k)=>`<th${k>=3&&c!=='Spread'?' class="n"':''}>${c}</th>`).join('');
+  document.getElementById('itemsH').textContent =
+    oneStore() ? `Every item — ${store}` : 'Every item';
+  document.getElementById('itemsNote').innerHTML = oneStore()
+    ? `Every tracked item <b>${esc(store)}</b> indented this date, with this store's own numbers — biggest shortfall first. Click any IO number to copy it for a Shoptree search.`
+    : `Every tracked item indented this date, biggest shortfall first. Click a row for the store-level split of what was actually sent. Click any IO number to copy it.`;
+
+  const tb=document.querySelector('#itemtbl tbody');
+  if(!hasDetail()){ tb.innerHTML=`<tr><td colspan="${cols.length}">No data for this date yet.</td></tr>`;
+    document.getElementById('itemcount').textContent=''; return; }
+  const rows=itemRows(), d=det();
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="${cols.length}">Nothing matches this filter.</td></tr>`;
+    document.getElementById('itemcount').textContent=''; return; }
+
+  tb.innerHTML=rows.map(i=>{
+    const key=i.g+'|'+i.i, open=openItems.has(key);
+    const sellThru = (i.sold!=null && i.s) ? i.sold/i.s : null;
+    let h=`<tr class="itemrow" data-k="${esc(key)}">
+      <td><b>${esc(i.i)}</b><div style="font-size:11.5px;color:var(--muted)">${esc(i.u||'')}</div></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);white-space:nowrap">${esc(i.g)}</td>
+      <td class="io">${ioCell(i)}</td>
+      <td class="n">${fmt(i.o)}</td><td class="n">${fmt(i.s)}</td><td class="n">${fmt(i.r)}</td>
+      <td class="n"><b>${fmt(i.sh)}</b></td><td class="n">${pct(i.f)}</td>`;
+    if(sales) h+=`<td class="n">${i.sold!=null?fmt(i.sold):dashCell}</td><td class="n">${pct(sellThru)}</td>`;
+    h+=`<td class="n">${i.np}</td>
+      <td class="n">${i.z?`<span style="color:var(--critical);font-weight:650">${i.z}</span>`:'0'}</td>
+      <td>${mini(i)}</td></tr>`;
+    if(open&&i.pr) h+=i.pr.map(p=>{
+      const pod=d.pods[p[0]];
+      const sold=soldAt(i,pod);
+      let r=`<tr class="podrow"><td>${esc(pod)}</td><td></td><td class="io">${ioTags(p[4])}</td>
+        <td class="n">${fmt(p[1])}</td><td class="n">${fmt(p[2])}</td><td class="n">${fmt(p[3])}</td>
+        <td class="n">${p[1]-p[2]>0?fmt(p[1]-p[2]):'—'}</td><td class="n">${pct(p[1]?p[2]/p[1]:null)}</td>`;
+      if(sales) r+=`<td class="n">${sold!=null?fmt(sold):dashCell}</td><td class="n">${pct(sold!=null&&p[2]?sold/p[2]:null)}</td>`;
+      return r+`<td colspan="3"></td></tr>`;
+    }).join('');
+    return h;
+  }).join('');
+
+  const shortCount=rows.filter(i=>i.sh>0).length;
+  document.getElementById('itemcount').textContent =
+    `${rows.length} item${rows.length===1?'':'s'} shown (${shortCount} short-supplied) · ${fmt(rows.reduce((a,b)=>a+b.sh,0))} gross short units`;
+  tb.querySelectorAll('.itemrow').forEach(tr=>tr.onclick=()=>{
+    const k=tr.dataset.k; openItems.has(k)?openItems.delete(k):openItems.add(k); renderItems(); });
+  wireIOTags(tb);
+}
+
+/* ---------- stores ---------- */
+function renderPods(){
+  const host=document.getElementById('podbars');
+  const drill=document.getElementById('poddrill');
+  if(oneStore()||!hasDetail()){ host.innerHTML=''; drill.innerHTML=''; return; }
+  let rows=podRows();
+  if(!rows.length){ host.innerHTML='<p class="note">No stores in this scope.</p>'; drill.innerHTML=''; return; }
+  rows.sort(podSort==='short'?(a,b)=>b.short-a.short:(a,b)=>a.fill-b.fill);
+  const max=Math.max(...rows.map(r=>r.short),1);
+  host.innerHTML=`<div class="bars">${rows.map(r=>`
+    <div class="brow${selPod===r.pod?' sel':''}" data-k="${esc(r.pod)}">
+      <div class="bname" title="${esc(r.pod)}">${esc(r.pod)}</div>
+      <div class="btrack"><div class="bfill" style="width:${Math.max(r.short/max*100,0.4)}%"></div></div>
+      <div class="bmeta"><b>${fmt(r.short)}</b> short · ${pct(r.fill)}</div></div>`).join('')}</div>`;
+  host.querySelectorAll('.brow').forEach(el=>{
+    const r=rows.find(x=>x.pod===el.dataset.k);
+    bindTip(el,`<b>${esc(r.pod)}</b><br>Indented ${fmt(r.ord)} → Sent ${fmt(r.sent)} → Received ${fmt(r.recd)}<br>
+      Short <b>${fmt(r.short)}</b> · fill ${pct(r.fill)}<br>${r.items} items · ${r.zero} at zero`
+      + (r.anySold?`<br>Sold <b>${fmt(r.sold)}</b> (${pct(r.sent?r.sold/r.sent:null)} of sent)`:''));
+    el.onclick=()=>{ selPod = selPod===el.dataset.k?null:el.dataset.k; renderPods(); };
+  });
+  renderPodDrill();
+}
+function renderPodDrill(){
+  const host=document.getElementById('poddrill');
+  if(!selPod||!hasDetail()){ host.innerHTML=''; return; }
+  const d=det(), pi=d.pods.indexOf(selPod), sales=hasSales();
+  const lines=[];
+  itemsFor().forEach(i=>(i.pr||[]).forEach(p=>{
+    if(p[0]!==pi||p[1]<=0) return;
+    lines.push({item:i.i,grp:i.g,io:p[4],ord:p[1],sent:p[2],recd:p[3],
+      short:Math.max(p[1]-p[2],0), fill:p[1]?p[2]/p[1]:null,
+      sold:soldAt(i,selPod)});
+  }));
+  lines.sort((a,b)=>b.short-a.short);
+  host.innerHTML=`<div class="drill"><h3>${esc(selPod)} — ${lines.length} item${lines.length===1?'':'s'} · ${esc(grpLabel())}</h3>
+    ${lines.length?`<div style="overflow-x:auto"><table><thead><tr><th>Item</th><th>Range</th><th>IO number</th>
+      <th class="n">Indented</th><th class="n">Sent</th><th class="n">Received</th><th class="n">Short</th><th class="n">Fill %</th>
+      ${sales?'<th class="n">Sold</th>':''}</tr></thead><tbody>${lines.map(l=>`<tr><td>${esc(l.item)}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);white-space:nowrap">${esc(l.grp)}</td>
+      <td class="io">${ioTags(l.io)}</td>
+      <td class="n">${fmt(l.ord)}</td><td class="n">${fmt(l.sent)}</td><td class="n">${fmt(l.recd)}</td>
+      <td class="n"><b>${fmt(l.short)}</b></td><td class="n">${pct(l.fill)}</td>
+      ${sales?`<td class="n">${l.sold!=null?fmt(l.sold):dashCell}</td>`:''}</tr>`).join('')}</tbody></table></div>`
+      :`<p class="note">Nothing in this scope.</p>`}
+    <p class="foothint">A Received of 0 against a non-zero Sent usually means the store has not booked the GRN yet, not that stock went missing.</p></div>`;
+  wireIOTags(host);
+}
+
+/* ---------- tracked-items editor ---------- */
+function renderRegistry(){
+  const host=document.getElementById('registry');
+  host.innerHTML = GROUPS.map(g=>{
+    const list=(DATA.registry[g]||[]).slice().sort();
+    return `<div style="margin-top:12px">
+      <div class="city-h"><span>${esc(g)} <span style="color:var(--muted);font-weight:400">(${list.length})</span></span><span class="rule"></span></div>
+      <div class="kv" style="margin-top:8px">${list.length?list.map(n=>
+        `<span class="pill">${esc(n)} <a href="#" class="regdel" data-g="${esc(g)}" data-n="${esc(n)}"
+           title="Stop tracking this item" style="color:var(--critical);text-decoration:none;font-weight:700;margin-left:4px">×</a></span>`
+        ).join(''):'<span style="color:var(--muted);font-size:13px">Nothing tracked in this group.</span>'}</div>
+    </div>`;
+  }).join('');
+  host.querySelectorAll('.regdel').forEach(a=>a.onclick=ev=>{
+    ev.preventDefault();
+    const g=a.dataset.g, n=a.dataset.n;
+    DATA.registry[g]=(DATA.registry[g]||[]).filter(x=>x!==n);
+    // Untracking also drops the item from every stored date. Adding needs a
+    // re-upload (the raw numbers were never kept), but removing never does —
+    // and leaving it on screen after you untracked it would just be confusing.
+    let purged=0;
+    DATA.dates.forEach(D=>{
+      const dd=DATA.detail[D]; if(!dd) return;
+      const before=dd.items.length;
+      dd.items=dd.items.filter(i=>i.i!==n);
+      purged+=before-dd.items.length;
+    });
+    if(oneStore()) refreshStoreOptions();
+    renderRegistry(); renderAll(); markDirty();
+    logLine(`Stopped tracking "${n}" (${g})`
+      + (purged?` — also removed from ${purged} stored date${purged===1?'':'s'}.`:'.'));
+  });
+
+  const sel=document.getElementById('regGroup');
+  if(sel && !sel.options.length) sel.innerHTML=GROUPS.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');
+  const cat=document.getElementById('regCatalog');
+  const seen=(DATA.catalog||[]).slice().sort();
+  if(cat) cat.innerHTML=seen.map(n=>`<option value="${esc(n)}"></option>`).join('');
+  document.getElementById('regHint').textContent = seen.length
+    ? `${seen.length} item names were seen in the last upload — start typing to pick one, or type any name exactly as Shoptree spells it.`
+    : `Upload a file first and this box will suggest the item names found in it.`;
+}
+function addRegistryItem(){
+  const g=document.getElementById('regGroup').value;
+  const box=document.getElementById('regNew');
+  const name=(box.value||'').trim();
+  if(!name){ logLine('Type an item name first.'); return; }
+  const all=[].concat(...GROUPS.map(x=>DATA.registry[x]||[]));
+  if(all.indexOf(name)>=0){ logLine(`"${name}" is already tracked.`); return; }
+  (DATA.registry[g]=DATA.registry[g]||[]).push(name);
+  box.value='';
+  renderRegistry(); renderAll(); markDirty();
+  const known=(DATA.catalog||[]).indexOf(name)>=0;
+  logLine(`Now tracking "${name}" under ${g}.`
+    + (known?' Re-upload any past day with Overwrite ticked to backfill it.'
+           :' ⚠ That name was not in the last upload — check the spelling against Shoptree, or it will never match.'));
+}
+
+/* ---------- wiring ---------- */
+function markDirty(){ const b=document.getElementById('downloadBtn'); if(b) b.disabled = DATA.dates.length===0; }
+function renderAll(){
+  const single=oneStore();
+  document.getElementById('secStores').style.display = single?'none':'';
+  renderTiles(); renderGroupCards(); renderTrend(); renderItems(); renderPods(); renderLive();
+}
+const press=(id,on)=>document.getElementById(id).setAttribute('aria-pressed',on?'true':'false');
+document.getElementById('podSortShort').onclick=()=>{podSort='short';press('podSortShort',1);press('podSortFill',0);renderPods();};
+document.getElementById('podSortFill').onclick=()=>{podSort='fill';press('podSortShort',0);press('podSortFill',1);renderPods();};
+['fltAll','fltShort','fltZero'].forEach((id,k)=>document.getElementById(id).onclick=()=>{
+  itemFilter=['all','short','zero'][k];
+  ['fltAll','fltShort','fltZero'].forEach((x,j)=>press(x,j===k)); renderItems();});
+document.getElementById('q').addEventListener('input',e=>{query=e.target.value.trim();renderItems();});
+document.getElementById('regAddBtn').onclick=addRegistryItem;
+document.getElementById('regNew').addEventListener('keydown',e=>{ if(e.key==='Enter') addRegistryItem(); });
+document.getElementById('themeBtn').onclick=e=>{
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  e.target.textContent=dark?'Dark':'Light'; press('themeBtn',!dark); renderTrend(); };
+let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(renderTrend,150);});
+
+/* ---------- tooltip ---------- */
+const tipEl = document.getElementById('tip');
+function showTip(e,html){
+  tipEl.innerHTML=html; tipEl.style.opacity=1;
+  const r=tipEl.getBoundingClientRect();
+  let x=e.clientX+14, y=e.clientY+14;
+  if(x+r.width>innerWidth-8) x=e.clientX-r.width-12;
+  if(y+r.height>innerHeight-8) y=e.clientY-r.height-12;
+  tipEl.style.left=x+'px'; tipEl.style.top=y+'px';
+}
+const hideTip = ()=> tipEl.style.opacity=0;
+function bindTip(el,html){
+  el.addEventListener('mousemove',e=>showTip(e,html));
+  el.addEventListener('mouseleave',hideTip);
+}
+
+
+/* ---------- charts ---------- */
+function lineChart(host,series,fmtY,title){
+  const W=host.clientWidth||900, H=190, L=48, R=94, TP=14, B=30;
+  const dates=DATA.dates, n=dates.length;
+  const all=series.flatMap(s=>s.pts.filter(v=>v!=null));
+  if(!all.length){ host.innerHTML=''; return; }
+  let lo=Math.min(...all), hi=Math.max(...all);
+  if(lo===hi){lo-=0.05;hi+=0.05;}
+  const pad=(hi-lo)*0.14; lo=Math.max(0,lo-pad); hi=hi+pad;
+  const X=i=> n===1 ? L+(W-L-R)/2 : L+i*(W-L-R)/(n-1);
+  const Y=v=> TP+(hi-v)/(hi-lo)*(H-TP-B);
+  const ticks=4, gy=[...Array(ticks+1)].map((_,k)=>lo+(hi-lo)*k/ticks);
+  const step=Math.max(1,Math.ceil(n/9));
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}">`;
+  gy.forEach(v=>{s+=`<line x1="${L}" x2="${W-R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>
+    <text x="${L-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="var(--muted)">${fmtY(v)}</text>`;});
+  dates.forEach((d,i)=>{ if(i%step===0||i===n-1)
+    s+=`<text x="${X(i).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--muted)">${d.slice(0,5)}</text>`;});
+  series.forEach(se=>{
+    const segs=[]; let cur=[];
+    se.pts.forEach((v,i)=>{ if(v==null){ if(cur.length)segs.push(cur); cur=[]; } else cur.push([X(i),Y(v)]); });
+    if(cur.length)segs.push(cur);
+    segs.forEach(pp=>{ s+=`<path d="M${pp.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L')}" fill="none"
+      stroke="${se.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      pp.forEach(p=>{s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="${se.color}" stroke="var(--surface-1)" stroke-width="2"/>`;});
+    });
+    const li=se.pts.map((v,i)=>v==null?-1:i).filter(i=>i>=0).pop();
+    if(li>=0) s+=`<text x="${(X(li)+9).toFixed(1)}" y="${(Y(se.pts[li])+4).toFixed(1)}" font-size="11.5"
+      font-weight="600" fill="var(--text-secondary)">${se.name}</text>`;
+  });
+  s+=`<line id="ch" x1="0" x2="0" y1="${TP}" y2="${H-B}" stroke="var(--baseline)" stroke-width="1" opacity="0"/>`;
+  s+=`<rect x="${L}" y="${TP}" width="${Math.max(W-L-R,1)}" height="${H-TP-B}" fill="transparent" id="hit"/></svg>`;
+  host.innerHTML=s;
+  const svg=host.querySelector('svg'), ch=svg.querySelector('#ch');
+  svg.querySelector('#hit').addEventListener('mousemove',e=>{
+    const bb=svg.getBoundingClientRect();
+    const i=n===1?0:Math.max(0,Math.min(n-1,Math.round((e.clientX-bb.left-L)/((W-L-R)/(n-1)))));
+    ch.setAttribute('x1',X(i)); ch.setAttribute('x2',X(i)); ch.setAttribute('opacity','1');
+    showTip(e,`<b>${dates[i]}</b><br>`+series.map(se=>
+      `${se.name}: <b>${se.pts[i]==null?'—':fmtY(se.pts[i])}</b>`).join('<br>'));
+  });
+  svg.querySelector('#hit').addEventListener('mouseleave',()=>{ch.setAttribute('opacity','0');hideTip();});
+}
+function barChart(host,series,title){
+  const W=host.clientWidth||900, H=150, L=70, R=94, TP=12, B=30;
+  const dates=DATA.dates, n=dates.length, k=series.length;
+  const hi=Math.max(1,...series.flatMap(s=>s.pts.map(v=>v||0)));
+  const bw=Math.max(2,Math.min(22,((W-L-R)/n)/k-2));
+  const X=i=> L+(i+0.5)*(W-L-R)/n;
+  const Y=v=> TP+(1-v/hi)*(H-TP-B);
+  const ticks=3, gy=[...Array(ticks+1)].map((_,j)=>hi*j/ticks);
+  const step=Math.max(1,Math.ceil(n/9));
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}">`;
+  gy.forEach(v=>{s+=`<line x1="${L}" x2="${W-R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>
+    <text x="${L-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="var(--muted)">${fmt(Math.round(v))}</text>`;});
+  dates.forEach((d,i)=>{ if(i%step===0||i===n-1)
+    s+=`<text x="${X(i).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--muted)">${d.slice(0,5)}</text>`;});
+  dates.forEach((d,i)=>{
+    series.forEach((se,j)=>{
+      const v=se.pts[i]||0; if(v<=0) return;
+      const x=X(i)-(k*(bw+2)-2)/2+j*(bw+2), y=Y(v);
+      s+=`<rect class="bk" data-i="${i}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}"
+        height="${Math.max(H-B-y,1).toFixed(1)}" rx="3" fill="${se.color}"/>`;
+    });
+  });
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--baseline)" stroke-width="1"/></svg>`;
+  host.innerHTML=s;
+  host.querySelectorAll('.bk').forEach(r=>{
+    const i=+r.dataset.i;
+    bindTip(r,`<b>${dates[i]}</b><br>`+series.map(se=>`${se.name}: <b>${fmt(se.pts[i]||0)}</b> short`).join('<br>'));
+  });
+}
+
+const P_NIGHT = ['Red Masala (CK)','Podi (CK)','Black Masala (CK)','Bhel Puri Mixture (CK)',
+  'Masala Peanut (CK)','Papdi (CK)','Poha Mixture (CK)'];
+const P_BAKERY = ['Brioche Bun 4" - GGN','Mumbai Pav - GGN','Sandwich Bread - GGN','Tutti Frutti Bun - GGN'];
+const P_TODAY_CATS = ['Production In-house','F&V'];
+const P_TERMINAL = ['closed','received','force_closed'];
+const P_NCR_PREFIX = ['GGN','NOI','DEL','GZB'];
+
+function pr2(x){ return Math.round(x*100)/100; }
+function pToNum(v){ const n = typeof v==='string' ? parseFloat(v) : Number(v); return Number.isFinite(n) ? n : 0; }
+function pDkey(s){ const [dd,mm,yy]=s.split('-'); return `${yy}-${mm}-${dd}`; }
+function pPrevDay(s){
+  const [dd,mm,yy]=s.split('-').map(Number);
+  const dt=new Date(Date.UTC(yy,mm-1,dd)); dt.setUTCDate(dt.getUTCDate()-1);
+  const p=n=>String(n).padStart(2,'0');
+  return `${p(dt.getUTCDate())}-${p(dt.getUTCMonth()+1)}-${dt.getUTCFullYear()}`;
+}
+function pGroupBy(arr,keyFn){
+  const m=new Map();
+  for(const x of arr){ const k=keyFn(x); const g=m.get(k); if(g) g.push(x); else m.set(k,[x]); }
+  return m;
+}
+const pK=(...parts)=>parts.join('::');
+
+/** Minimal RFC4180 CSV parser — handles quoted fields with embedded commas,
+ * newlines and doubled/escaped quotes, which the raw exports use (e.g. dates
+ * like "Aug 5, 2026 1:45:36 PM"). Returns an array of row objects keyed by
+ * the header row, same shape PapaParse's {header:true} would give us. */
+function parseCSV(text){
+  if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+  const rows=[]; let row=[], field='', inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQuotes){
+      if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else inQuotes=false; }
+      else field+=c;
+    } else {
+      if(c==='"') inQuotes=true;
+      else if(c===','){ row.push(field); field=''; }
+      else if(c==='\r'){ /* skip, \n handles the line break */ }
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else field+=c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  if(!rows.length) return [];
+  const header=rows[0], out=[];
+  for(let r=1;r<rows.length;r++){
+    if(rows[r].length===1 && rows[r][0]==='') continue;
+    const obj={};
+    for(let c=0;c<header.length;c++) obj[header[c]]=rows[r][c]!==undefined?rows[r][c]:'';
+    out.push(obj);
+  }
+  return out;
+}
+
+function loadExportRows(csvText, filename){
+  const parsed=parseCSV(csvText);
+  if(parsed.length===0) return [];
+  const fields=Object.keys(parsed[0]);
+  for(const c of ['Ordered Quantity','Sent Quantity','Received Quantity']){
+    if(!fields.includes(c)) throw new Error(`${filename}: missing column "${c}"`);
+  }
+  const out=[];
+  for(const r of parsed){
+    const pod=r['Internal Order From Location'], exp=r['Internal Order Expected Date'];
+    if(!pod || !exp) continue;
+    const prefix=pod.split('-')[0];
+    const city = P_NCR_PREFIX.includes(prefix) ? 'NCR' : 'BLR';
+    out.push({
+      item:r['Product Full Name']||'', cat:r['Category']||'', uom:r['Unit Of Measure']||'',
+      pod, status:r['Internal Order Status Name']||'', exp, io:r['Internal Order Number']||'',
+      ord:pToNum(r['Ordered Quantity']), sent:pToNum(r['Sent Quantity']), recd:pToNum(r['Received Quantity']),
+      city,
+    });
+  }
+  return out;
+}
+
+function discoverReportDate(rows){
+  let best=null;
+  for(const r of rows){ if(!best || pDkey(r.exp)>pDkey(best)) best=r.exp; }
+  if(!best) throw new Error('no usable rows (missing pod/expected-date on every line)');
+  return best;
+}
+
+function dedupeReraised(rows){
+  // Production In-house, both cities: originally a BLR-only CK re-raise
+  // pattern, but from 25-08-2026 the same thing started happening for
+  // NCR/Noida pods too, so this is no longer city-restricted.
+  const groups=pGroupBy(rows.filter(r=>r.cat==='Production In-house'), r=>pK(r.item,r.pod));
+  const drop=new Set();
+  groups.forEach(g=>{
+    if(g.length>1){
+      const hasSent=g.some(r=>r.sent>0), hasZero=g.some(r=>r.sent===0);
+      if(hasSent&&hasZero) g.filter(r=>r.sent===0).forEach(r=>drop.add(r));
+    }
+  });
+  return rows.filter(r=>!drop.has(r));
+}
+
+// From this report date on, the source system stamps Expected Date the same
+// day for every category (matching how Production In-house always worked) —
+// no more D-1 lag for the other categories.
+const P_SAME_DAY_FROM = '2026-08-21';
+
+function applyDateRules(rows, D){
+  const DM1=pPrevDay(D);
+  const sameDayAll = pDkey(D) >= P_SAME_DAY_FROM;
+  const want=r=>{
+    if(sameDayAll || P_TODAY_CATS.includes(r.cat)) return (r.city==='BLR' && P_NIGHT.includes(r.item)) ? DM1 : D;
+    if(r.city==='NCR' && P_BAKERY.includes(r.item)) return D;
+    return DM1;
+  };
+  const filtered=rows.filter(r=>r.exp===want(r) && r.status!=='ordered')
+    .map(r=>({...r, short:Math.max(r.ord-r.sent,0), terminal:P_TERMINAL.includes(r.status)}));
+  return dedupeReraised(filtered);
+}
+
+function classifyPattern(sub){
+  const n=sub.length, zero=sub.filter(s=>s.sent===0).length;
+  const full=sub.filter(s=>s.fill!=null && s.fill>=0.995).length;
+  const fills=sub.map(s=>s.fill).filter(f=>f!=null);
+  let spread=0;
+  if(n>1 && fills.length>1){
+    const mean=fills.reduce((a,b)=>a+b,0)/fills.length;
+    const variance=fills.reduce((a,b)=>a+(b-mean)**2,0)/(fills.length-1);
+    spread=Math.sqrt(Math.max(variance,0));
+  }
+  if(!Number.isFinite(spread)) spread=0;
+  const sentSum=sub.reduce((a,s)=>a+s.sent,0);
+  let pat;
+  if(sentSum===0) pat='total stock-out';
+  else if(full===n) pat='fully supplied';
+  else if(n<2) pat='single pod';
+  else if(zero===0 && spread<0.12) pat='pro-rata cut';
+  else pat='uneven';
+  return {zero,full,spread,pat};
+}
+
+/** Build one report date's Agg — same shape as everything already in DATA.detail. */
+
+/* ---------- build one report date from raw Internal Order rows ---------- */
+/** item name -> tracked group, from the editable registry */
+function registryMap(){
+  const m={};
+  GROUPS.forEach(g=>(DATA.registry[g]||[]).forEach(n=>{ m[n]=g; }));
+  return m;
+}
+
+function buildDayAgg(D, framesRows){
+  const raw=[].concat(...framesRows);
+  const rows=applyDateRules(raw, D);              // same date/status rules + re-raise dedup
+  const reg=registryMap();
+
+  // every item name the file contained, so the tracked-items picker can offer them
+  const catalog=[...new Set(raw.map(r=>r.item).filter(Boolean))].sort();
+
+  const kept=rows.filter(r=>reg[r.item]);
+  if(kept.length===0) return {date:D, pods:[], items:[], catalog};
+
+  // item + store lines
+  const lines=new Map();
+  kept.forEach(r=>{
+    const k=r.item+'\u0000'+r.uom+'\u0000'+r.pod;
+    let x=lines.get(k);
+    if(!x){ x={item:r.item, uom:r.uom, pod:r.pod, ord:0, sent:0, recd:0, ios:new Set()}; lines.set(k,x); }
+    x.ord+=r.ord; x.sent+=r.sent; x.recd+=r.recd;
+    if(r.io) x.ios.add(String(r.io).trim());
+  });
+  const all=[...lines.values()].filter(x=>x.ord>0);
+
+  const pods=[...new Set(all.map(x=>x.pod))].sort();
+  const pidx=new Map(pods.map((p,i)=>[p,i]));
+
+  const byItem=new Map();
+  all.forEach(x=>{
+    const k=x.item+'\u0000'+x.uom;
+    let g=byItem.get(k);
+    if(!g){ g={i:x.item, u:x.uom, g:reg[x.item], rows:[]}; byItem.set(k,g); }
+    g.rows.push(x);
+  });
+
+  const items=[...byItem.values()].map(g=>{
+    const o=g.rows.reduce((a,x)=>a+x.ord,0);
+    const s=g.rows.reduce((a,x)=>a+x.sent,0);
+    const r=g.rows.reduce((a,x)=>a+x.recd,0);
+    const sh=g.rows.reduce((a,x)=>a+Math.max(x.ord-x.sent,0),0);
+    return {
+      g:g.g, i:g.i, u:g.u,
+      o:pr2(o), s:pr2(s), r:pr2(r), sh:pr2(sh),
+      f:o?Math.round(s/o*10000)/10000:0,
+      np:g.rows.length,
+      z:g.rows.filter(x=>x.sent===0).length,
+      pr:g.rows.map(x=>[pidx.get(x.pod), pr2(x.ord), pr2(x.sent), pr2(x.recd),
+                        [...x.ios].sort().join(',')])
+             .sort((a,b)=>(a[1]?a[2]/a[1]:9)-(b[1]?b[2]/b[1]:9))
+    };
+  }).sort((a,b)=>b.sh-a.sh);
+
+  return {date:D, pods, items, catalog};
+}
+
+function mergeAggIntoData(agg){
+  const D=agg.date;
+  DATA.detail[D]={pods:agg.pods, items:agg.items};
+  if(DATA.dates.indexOf(D)<0) DATA.dates.push(D);
+  DATA.dates.sort((a,b)=> pDkey(a)<pDkey(b) ? -1 : pDkey(a)>pDkey(b) ? 1 : 0);
+  if(agg.catalog && agg.catalog.length) DATA.catalog=agg.catalog;
+}
+
+/* =====================================================================
+   Sales ingestion
+   The sales export is whatever Metabase hands you, so nothing here assumes
+   a fixed schema: columns are auto-detected, and anything ambiguous is put
+   to the user instead of being guessed at.
+   ===================================================================== */
+
+const SALES_HINTS = {
+  date: /^(business[\s_-]*date|order[\s_-]*date|sale[\s_-]*date|date|day)$/i,
+  pod:  /(location|store|outlet|branch|pod|restaurant|kitchen|site)/i,
+  item: /(product|item|sku|dish|menu)/i,
+  qty:  /(qty|quantity|units?|sold|count)/i
+};
+
+/** Internal Order export, or a sales export? */
+function looksLikeIO(fields){
+  return fields.indexOf('Ordered Quantity')>=0 && fields.indexOf('Internal Order From Location')>=0;
+}
+
+function detectSalesCols(fields){
+  const pick = re => fields.find(f=>re.test(String(f).trim())) || '';
+  // prefer an exact-ish date column, else anything with "date" in it
+  let date = pick(SALES_HINTS.date) || fields.find(f=>/date/i.test(f)) || '';
+  // a quantity column that isn't an amount/value/price column
+  const qtyCands = fields.filter(f=>SALES_HINTS.qty.test(f) && !/amount|value|price|total|revenue|sales?[\s_-]*value/i.test(f));
+  const qty = qtyCands[0] || fields.find(f=>SALES_HINTS.qty.test(f)) || '';
+  return {date, pod:pick(SALES_HINTS.pod), item:pick(SALES_HINTS.item), qty};
+}
+
+/** normalise an item name so CK indent names line up with menu/sales names */
+function normName(s){
+  return String(s||'')
+    .toLowerCase()
+    .replace(/\((?:gourmet\s*)?ck\)/g,' ')      // "(Gourmet CK)" / "(CK)"
+    .replace(/-\s*gourmet\s*ck\b/g,' ')         // "- Gourmet CK"
+    .replace(/-\s*ck\b/g,' ')                   // "- CK"
+    .replace(/\(v\d*\)/g,' ')                   // "(V)" / "(V1)"
+    .replace(/\b(rm|veg|non\s*veg)\b/g,' ')
+    .replace(/[^a-z0-9]+/g,' ')
+    .trim();
+}
+
+/** parse a sales CSV into {date, pod, item, qty} rows using the chosen columns */
+function loadSalesRows(csvText, filename, cols){
+  const parsed=parseCSV(csvText);
+  if(!parsed.length) return [];
+  const out=[];
+  for(const r of parsed){
+    const pod=String(r[cols.pod]||'').trim();
+    const item=String(r[cols.item]||'').trim();
+    if(!pod||!item) continue;
+    const qty=pToNum(r[cols.qty]);
+    const date=normaliseDate(String(r[cols.date]||'').trim());
+    out.push({date, pod, item, qty});
+  }
+  return out;
+}
+
+/** accept dd-mm-yyyy, yyyy-mm-dd, dd/mm/yyyy and "Oct 7, 2026" style dates */
+function normaliseDate(s){
+  if(!s) return '';
+  let m=s.match(/^(\d{2})-(\d{2})-(\d{4})/);            if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);                if(m) return `${m[3]}-${m[2]}-${m[1]}`;
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);          if(m) return `${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}-${m[3]}`;
+  const d=new Date(s);
+  if(!isNaN(d.getTime())){
+    const p=n=>String(n).padStart(2,'0');
+    return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()}`;
+  }
+  return '';
+}
+
+/**
+ * Fold sales rows into the stored dates.
+ * Returns a report so the caller can tell the user exactly what matched and
+ * what did not — a silent non-match would read as "sold nothing", which is
+ * the one wrong answer this whole feature must never give.
+ */
+function attachSales(salesRows){
+  const rep={dates:{}, matched:new Set(), unmatchedSales:new Set(), unmatchedPods:new Set(), noDate:0};
+
+  // tracked item name -> normalised key, plus any manual aliases
+  const tracked=[].concat(...GROUPS.map(g=>(DATA.registry[g]||[]).map(n=>n)));
+  const byNorm=new Map();
+  tracked.forEach(n=>{ const k=normName(n); if(!byNorm.has(k)) byNorm.set(k,n); });
+  const alias=DATA.salesAlias||{};
+
+  const resolve = salesItem => {
+    if(alias[salesItem]) return alias[salesItem];
+    const k=normName(salesItem);
+    if(byNorm.has(k)) return byNorm.get(k);
+    return null;
+  };
+
+  // bucket: date -> trackedItem -> pod -> qty
+  const buckets=new Map();
+  salesRows.forEach(r=>{
+    if(!r.date){ rep.noDate++; return; }
+    const t=resolve(r.item);
+    if(!t){ rep.unmatchedSales.add(r.item); return; }
+    rep.matched.add(r.item);
+    if(!buckets.has(r.date)) buckets.set(r.date,new Map());
+    const byItem=buckets.get(r.date);
+    if(!byItem.has(t)) byItem.set(t,new Map());
+    const byPod=byItem.get(t);
+    byPod.set(r.pod,(byPod.get(r.pod)||0)+r.qty);
+  });
+
+  buckets.forEach((byItem,D)=>{
+    const dd=DATA.detail[D];
+    if(!dd){ rep.dates[D]={applied:0, note:'no indent data stored for this date'}; return; }
+    const podSet=new Set(dd.pods);
+    let applied=0;
+    dd.items.forEach(i=>{
+      const byPod=byItem.get(i.i);
+      if(!byPod) return;
+      const map={}; let tot=0;
+      byPod.forEach((q,pod)=>{
+        if(!podSet.has(pod)) rep.unmatchedPods.add(pod);
+        map[pod]=pr2((map[pod]||0)+q); tot+=q;
+      });
+      i.soldBy=map; i.sold=pr2(tot); applied++;
+    });
+    // an item with sales data loaded but no rows at all genuinely sold zero
+    dd.salesLoaded=true;
+    dd.items.forEach(i=>{ if(i.sold==null && byItem.size){ i.sold=0; i.soldBy={}; } });
+    rep.dates[D]={applied, items:dd.items.length};
+  });
+  return rep;
+}
+
+/** clear every sales figure (used when re-mapping names) */
+function clearSales(){
+  DATA.dates.forEach(D=>{
+    const dd=DATA.detail[D]; if(!dd) return;
+    delete dd.salesLoaded;
+    dd.items.forEach(i=>{ delete i.sold; delete i.soldBy; });
+  });
+}
+
+/* ---------- live / not-live check ---------- */
+/**
+ * For the current date and range, classify every item x store line.
+ *   ok          sent and sold
+ *   notselling  sent, but zero sold  -> the flag the user asked for
+ *   unsold-nosend nothing sent, nothing sold
+ *   nodata      no sales file loaded for this date
+ */
+function liveRows(){
+  const d=det(); if(!d) return [];
+  const loaded=!!d.salesLoaded;
+  const out=[];
+  itemsFor().forEach(i=>{
+    (i.pr||[]).forEach(p=>{
+      if(p[1]<=0) return;
+      const pod=d.pods[p[0]];
+      const sold=soldAt(i,pod);
+      let state;
+      if(!loaded || i.sold==null) state='nodata';
+      else if(p[2]<=0) state = (sold>0) ? 'sold-not-sent' : 'unsold-nosend';
+      else state = (sold>0) ? 'ok' : 'notselling';
+      out.push({item:i.i, grp:i.g, pod, ord:p[1], sent:p[2], sold, state, io:p[4]});
+    });
+  });
+  return out;
+}
+
+/* ---------- live check ---------- */
+let liveView='flag';
+
+const STATE_LABEL={
+  ok:'selling', notselling:'indented, not selling',
+  'sold-not-sent':'sold without a dispatch', 'unsold-nosend':'nothing sent, nothing sold',
+  nodata:'no sales data'
+};
+const STATE_COLOR={
+  ok:'var(--good)', notselling:'var(--critical)',
+  'sold-not-sent':'var(--warning)', 'unsold-nosend':'var(--muted)', nodata:'var(--muted)'
+};
+
+function renderLive(){
+  const sum=document.getElementById('liveSummary');
+  const body=document.getElementById('liveBody');
+  const d=det();
+  if(!d){ sum.innerHTML=''; body.innerHTML='<p class="note">No data for this date yet.</p>'; return; }
+
+  const rows=liveRows();
+  const n={ok:0,notselling:0,'sold-not-sent':0,'unsold-nosend':0,nodata:0};
+  rows.forEach(r=>n[r.state]++);
+  const loaded=!!d.salesLoaded;
+
+  if(!loaded){
+    sum.innerHTML=`<p class="note" style="color:var(--warning)"><b>No sales file loaded for ${esc(date)}.</b>
+      Everything below is the indent side only — upload a sales export for this date and the flags switch on.
+      Until then nothing is marked "not selling", because no sales data is not the same as no sales.</p>`;
+  } else {
+    const pills=[
+      ['Selling', n.ok, 'var(--good)'],
+      ['Indented, not selling', n.notselling, 'var(--critical)'],
+      ['Sold without a dispatch', n['sold-not-sent'], 'var(--warning)'],
+      ['Nothing sent or sold', n['unsold-nosend'], 'var(--muted)']
+    ].filter(p=>p[1]>0);
+    sum.innerHTML=`<div class="kv">${pills.map(([l,v,c])=>
+      `<span class="pill"><b style="color:${c}">${v}</b> ${l}</span>`).join('')}
+      <span class="pill">${rows.length} store line${rows.length===1?'':'s'} indented</span></div>`;
+  }
+
+  if(liveView==='grid'){ renderGrid(body, rows); return; }
+
+  let show = liveView==='flag' ? rows.filter(r=>r.state==='notselling') : rows;
+  show=show.slice().sort((a,b)=> b.sent-a.sent || a.item.localeCompare(b.item));
+
+  if(!show.length){
+    body.innerHTML = liveView==='flag'
+      ? (loaded ? '<p class="note" style="color:var(--good)">Nothing flagged — every store that was sent stock sold at least one unit.</p>'
+                : '<p class="note">Nothing to flag without a sales file for this date.</p>')
+      : '<p class="note">No lines in this scope.</p>';
+    return;
+  }
+  body.innerHTML=`<div style="overflow-x:auto;margin-top:12px"><table><thead><tr>
+    <th>Item</th><th>Range</th><th>Store</th><th>IO number</th>
+    <th class="n">Indented</th><th class="n">Sent</th><th class="n">Sold</th><th>Status</th>
+    </tr></thead><tbody>${show.map(r=>`<tr>
+      <td><b>${esc(r.item)}</b></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);white-space:nowrap">${esc(r.grp)}</td>
+      <td style="white-space:nowrap">${esc(r.pod)}</td>
+      <td class="io">${ioTags(r.io)}</td>
+      <td class="n">${fmt(r.ord)}</td><td class="n">${fmt(r.sent)}</td>
+      <td class="n">${r.sold==null?dashCell:`<b>${fmt(r.sold)}</b>`}</td>
+      <td><span class="pill" style="color:${STATE_COLOR[r.state]}">${STATE_LABEL[r.state]}</span></td>
+    </tr>`).join('')}</tbody></table></div>
+    <p class="foothint">${show.length} line${show.length===1?'':'s'} shown${liveView==='flag'?' · biggest dispatch first, so the costliest ones are at the top':''}.</p>`;
+  wireIOTags(body);
+}
+
+/** item x store grid — one cell per line, coloured by state */
+function renderGrid(host, rows){
+  if(!rows.length){ host.innerHTML='<p class="note">No lines in this scope.</p>'; return; }
+  const items=[...new Set(rows.map(r=>r.item))].sort();
+  const pods=[...new Set(rows.map(r=>r.pod))].sort();
+  const cell=new Map();
+  rows.forEach(r=>cell.set(r.item+'\u0000'+r.pod,r));
+  const dot=r=>{
+    if(!r) return `<span title="not indented here" style="color:var(--border)">·</span>`;
+    const t=`${r.item} · ${r.pod}\nIndented ${r.ord} → sent ${r.sent}`
+      + (r.sold!=null?` → sold ${r.sold}`:'')+`\n${STATE_LABEL[r.state]}`;
+    const g={ok:'●',notselling:'▲','sold-not-sent':'◆','unsold-nosend':'○',nodata:'·'}[r.state];
+    return `<span title="${esc(t)}" style="color:${STATE_COLOR[r.state]};font-size:13px">${g}</span>`;
+  };
+  host.innerHTML=`<div style="overflow-x:auto;margin-top:12px"><table style="font-size:12px">
+    <thead><tr><th style="text-align:left">Item</th>${pods.map(p=>
+      `<th style="writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-weight:500;padding:6px 2px">${esc(p)}</th>`).join('')}
+      <th class="n">Stores</th></tr></thead>
+    <tbody>${items.map(it=>{
+      const line=pods.map(p=>cell.get(it+'\u0000'+p));
+      const live=line.filter(r=>r&&r.state==='ok').length;
+      const flag=line.filter(r=>r&&r.state==='notselling').length;
+      return `<tr><td style="white-space:nowrap"><b>${esc(it)}</b></td>${
+        line.map(r=>`<td style="text-align:center;padding:3px 2px">${dot(r)}</td>`).join('')}
+        <td class="n" style="white-space:nowrap">${live} live${flag?` · <b style="color:var(--critical)">${flag} flagged</b>`:''}</td></tr>`;
+    }).join('')}</tbody></table></div>
+  <div class="kv" style="margin-top:10px">
+    <span class="pill"><b style="color:var(--good)">●</b> selling</span>
+    <span class="pill"><b style="color:var(--critical)">▲</b> indented, not selling</span>
+    <span class="pill"><b style="color:var(--warning)">◆</b> sold without a dispatch</span>
+    <span class="pill"><b style="color:var(--muted)">○</b> nothing sent or sold</span>
+    <span class="pill"><b style="color:var(--border)">·</b> not indented at that store</span>
+  </div>`;
+}
+
+/* ---------- unmatched sales names ---------- */
+function renderAlias(){
+  const sec=document.getElementById('secAlias'), body=document.getElementById('aliasBody');
+  const un=(DATA.salesUnmatched||[]).filter(n=>!(DATA.salesAlias||{})[n]);
+  if(!un.length){ sec.style.display='none'; body.innerHTML=''; return; }
+  sec.style.display='';
+  const tracked=[].concat(...GROUPS.map(g=>(DATA.registry[g]||[]).slice())).sort();
+  body.innerHTML=`<div style="overflow-x:auto"><table><thead><tr>
+      <th>Name in the sales file</th><th>Belongs to</th></tr></thead>
+    <tbody>${un.slice(0,60).map(n=>`<tr>
+      <td>${esc(n)}</td>
+      <td><select class="ctl aliassel" data-n="${esc(n)}">
+        <option value="">— ignore this name —</option>
+        ${tracked.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')}
+      </select></td></tr>`).join('')}</tbody></table></div>
+    ${un.length>60?`<p class="foothint">Showing 60 of ${un.length}.</p>`:''}`;
+  body.querySelectorAll('.aliassel').forEach(s=>s.onchange=()=>{
+    const from=s.dataset.n, to=s.value;
+    DATA.salesAlias=DATA.salesAlias||{};
+    if(to) DATA.salesAlias[from]=to; else delete DATA.salesAlias[from];
+    logLine(to ? `Mapped sales name "${from}" → "${to}". Re-upload the sales file to apply it.`
+               : `Ignoring sales name "${from}".`);
+    markDirty();
+  });
+}
+
+/* ---------- upload: Internal Order files and/or a sales file ---------- */
+const uploadLog=document.getElementById('uploadLog');
+function logLine(msg){
+  uploadLog.style.display='block';
+  uploadLog.textContent += (uploadLog.textContent?'\n':'') + msg;
+  uploadLog.scrollTop=uploadLog.scrollHeight;
+}
+
+/** read just enough of a file to see its header row */
+async function peekFields(file){
+  const head=await file.slice(0, 64*1024).text();
+  const rows=parseCSV(head.split(/\r?\n/).slice(0,3).join('\n'));
+  return rows.length ? Object.keys(rows[0]) : [];
+}
+
+/** when files are picked, show the column mapper if one of them is a sales export */
+document.getElementById('fileInput').addEventListener('change', async ()=>{
+  const panel=document.getElementById('salesMap');
+  const files=Array.from(document.getElementById('fileInput').files||[]);
+  panel.style.display='none';
+  for(const f of files){
+    let fields=[];
+    try{ fields=await peekFields(f); }catch(e){ continue; }
+    if(!fields.length || looksLikeIO(fields)) continue;
+    const guess=detectSalesCols(fields);
+    const saved=DATA.salesCols||{};
+    const use={date:saved.date&&fields.includes(saved.date)?saved.date:guess.date,
+               pod: saved.pod &&fields.includes(saved.pod) ?saved.pod :guess.pod,
+               item:saved.item&&fields.includes(saved.item)?saved.item:guess.item,
+               qty: saved.qty &&fields.includes(saved.qty) ?saved.qty :guess.qty};
+    const opts=k=>`<option value="">— none —</option>`+fields.map(f2=>
+      `<option value="${esc(f2)}"${f2===use[k]?' selected':''}>${esc(f2)}</option>`).join('');
+    document.getElementById('scDate').innerHTML=opts('date');
+    document.getElementById('scPod').innerHTML=opts('pod');
+    document.getElementById('scItem').innerHTML=opts('item');
+    document.getElementById('scQty').innerHTML=opts('qty');
+    document.getElementById('scPreview').textContent =
+      `${f.name} — ${fields.length} columns found.`;
+    panel.style.display='';
+    break;
+  }
+});
+
+function chosenSalesCols(){
+  return {date:document.getElementById('scDate').value,
+          pod: document.getElementById('scPod').value,
+          item:document.getElementById('scItem').value,
+          qty: document.getElementById('scQty').value};
+}
+
+document.getElementById('processBtn').onclick=async ()=>{
+  const files=Array.from(document.getElementById('fileInput').files||[]);
+  const overwrite=document.getElementById('overwriteChk').checked;
+  uploadLog.textContent='';
+  if(!files.length){ logLine('Pick at least one CSV file first.'); return; }
+  const tracked=[].concat(...GROUPS.map(g=>DATA.registry[g]||[])).length;
+  if(!tracked){ logLine('Nothing is in the tracked-items list. Add items at the bottom of the page first.'); return; }
+
+  try{
+    const byDate=new Map();
+    let salesRows=[], sawSales=false;
+
+    for(const file of files){
+      let text;
+      try{ text=await file.text(); }catch(e){ logLine(`  ✗ ${file.name}: ${e.message}`); continue; }
+      let fields=[];
+      try{ const probe=parseCSV(text.split(/\r?\n/).slice(0,3).join('\n'));
+           fields=probe.length?Object.keys(probe[0]):[]; }catch(e){}
+
+      if(fields.length && !looksLikeIO(fields)){
+        // ---- sales export ----
+        const cols=chosenSalesCols();
+        const missing=['date','pod','item','qty'].filter(k=>!cols[k]);
+        if(missing.length){
+          logLine(`  ✗ ${file.name}: tell me which column holds ${missing.join(', ')} in the box above, then press Process again.`);
+          continue;
+        }
+        logLine(`Reading sales file ${file.name}…`);
+        const rows=loadSalesRows(text, file.name, cols);
+        if(!rows.length){ logLine(`  ✗ no usable sales rows (check the Store and Item columns).`); continue; }
+        const dates=[...new Set(rows.map(r=>r.date).filter(Boolean))].sort();
+        logLine(`  → ${rows.length} rows · dates ${dates.slice(0,4).join(', ')}${dates.length>4?' …':''}`);
+        salesRows=salesRows.concat(rows); sawSales=true;
+        DATA.salesCols=cols;
+        continue;
+      }
+
+      // ---- internal order export ----
+      logLine(`Parsing ${file.name}…`);
+      let rows;
+      try{ rows=loadExportRows(text, file.name); }
+      catch(e){ logLine(`  ✗ ${e.message}`); continue; }
+      if(!rows.length){ logLine(`  ✗ ${file.name}: no usable rows`); continue; }
+      const D=discoverReportDate(rows);
+      logLine(`  → report date ${D} · ${rows.length} rows`);
+      const arr=byDate.get(D)||[]; arr.push(rows); byDate.set(D,arr);
+    }
+
+    let added=false, last=null;
+    for(const [D,arrs] of byDate){
+      if(DATA.dates.indexOf(D)>=0 && !overwrite){
+        logLine(`${D} is already in this file — skipping (tick "Overwrite" to replace it).`); continue;
+      }
+      logLine(`Building ${D}…`);
+      try{
+        const agg=buildDayAgg(D, arrs);
+        if(!agg.items.length){
+          logLine(`  ✗ ${D}: none of the tracked items appear on this date. Check the tracked-items list against the spellings in the file.`);
+          continue;
+        }
+        mergeAggIntoData(agg);
+        const byGrp=GROUPS.map(g=>{
+          const it=agg.items.filter(i=>i.g===g); if(!it.length) return null;
+          const go=it.reduce((a,i)=>a+i.o,0), gs=it.reduce((a,i)=>a+i.s,0);
+          const sh=it.reduce((a,i)=>a+i.sh,0);
+          return `${g} ${go?((gs/go)*100).toFixed(1):'—'}%${sh?` (${pr2(sh)} short)`:''}`;
+        }).filter(Boolean).join(' · ');
+        logLine(`  ✓ ${D} — ${agg.items.length} items, ${agg.pods.length} stores`);
+        logLine(`      ${byGrp}`);
+        added=true; last=D;
+      }catch(e){ logLine(`  ✗ ${D}: ${e.message}`); }
+    }
+
+    if(sawSales){
+      logLine('Matching sales against the tracked items…');
+      const rep=attachSales(salesRows);
+      DATA.salesUnmatched=[...new Set((DATA.salesUnmatched||[]).concat([...rep.unmatchedSales]))];
+      Object.keys(rep.dates).forEach(D=>{
+        const r=rep.dates[D];
+        logLine(r.note ? `  • ${D}: ${r.note}` : `  ✓ ${D}: sales attached to ${r.applied} of ${r.items} tracked items`);
+      });
+      if(rep.noDate) logLine(`  ⚠ ${rep.noDate} sales rows had no readable date — check the Date column.`);
+      if(rep.unmatchedPods.size) logLine(`  ⚠ store names not seen in the indent data: ${[...rep.unmatchedPods].slice(0,6).join(', ')}${rep.unmatchedPods.size>6?' …':''}`);
+      if(rep.unmatchedSales.size) logLine(`  ⚠ ${rep.unmatchedSales.size} sales item name(s) did not match anything tracked — map them in "Sales names that didn't match" below, or their sales stay uncounted.`);
+      added=true;
+    }
+
+    if(added){
+      if(last) date=last;
+      selPod=null; openItems.clear();
+      initControls(); renderRegistry(); renderAlias(); renderAll(); markDirty();
+      logLine('Done — the dashboard above is updated. Click "Download updated dashboard" to save this as your new file.');
+    }
+  }catch(e){ logLine(`Error: ${e.message||String(e)}`); }
+};
+
+document.getElementById('removeDateBtn').onclick=()=>{
+  if(!date) return;
+  const target=date;
+  if(!confirm(`Remove ${target} from this dashboard?\n\nThis only changes the copy open in this tab — click "Download updated dashboard" afterwards to save it without that date.`)) return;
+  DATA.dates=DATA.dates.filter(d=>d!==target);
+  delete DATA.detail[target];
+  date=DATA.dates[DATA.dates.length-1];
+  selPod=null; openItems.clear();
+  initControls(); renderAll(); markDirty();
+  logLine(`Removed ${target}. Click "Download updated dashboard" to save this as your new file.`);
+};
+
+document.getElementById('downloadBtn').onclick=()=>{
+  document.getElementById('dataTag').textContent=JSON.stringify(DATA);
+  const html='<!doctype html>\n'+document.documentElement.outerHTML;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const latest=DATA.dates.length?DATA.dates[DATA.dates.length-1]:'empty';
+  a.download=`Gourmet & Soups dashboard (through ${latest}).html`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+};
+
+/* live-view toggles */
+['lvFlag','lvAll','lvGrid'].forEach((id,k)=>document.getElementById(id).onclick=()=>{
+  liveView=['flag','all','grid'][k];
+  ['lvFlag','lvAll','lvGrid'].forEach((x,j)=>press(x,j===k));
+  renderLive();
+});
+
+initControls(); renderRegistry(); renderAlias(); renderAll(); markDirty();
+(function(){ var el=document.getElementById('jsReady');
+  if(el){ el.textContent='Dashboard ready.'; el.style.color='var(--good)'; } })();
+
+</script>
+</body>
+</html>
